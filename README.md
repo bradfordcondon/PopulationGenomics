@@ -15,7 +15,7 @@ The collection will include all scripts required to
 
 ###Requirements and set up
 
-(ITSx)[url=http://microbiology.se/software/itsx/]
+[ITSx] url=http://microbiology.se/software/itsx/
 
 BioPerl (for BLAST-based ITS)
 
