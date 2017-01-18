@@ -42,3 +42,13 @@ Runs BLAST given a FASTA query file an directory of blast databases.
 * combine_ITS_blasts.pl
 
 Combines BLAST output
+
+
+###Output
+
+After generating the ITS sequences, they can be aligned and trimmed as follows:
+
+```
+muscle3 -in data/ITS1_all_Loci_100min.fasta -out data/ITS1_100min_aligned.fasta
+Gblocks data/ITS1_100min_aligned.fasta -t=d -b5=n
+```
