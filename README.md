@@ -12,7 +12,17 @@ The collection will include all scripts required to
 * Align orthologs
 * Calculate population genomics statistics (ie. FST)
 
+
+###Requirements and set up
+
+(ITSx)[url=http://microbiology.se/software/itsx/]
+
+BioPerl (for BLAST-based ITS)
+
 #Scripts
+
+
+###ITSx based
 
 * **run_ITS.pl**
 
@@ -23,4 +33,12 @@ Runs ITSx on all FASTA files in the current directory, or, specificy a directory
 Processes ITSx output.  Peforms filtering (regions > 75, < 400), outputs two FASTA files- one for ITS1, one for ITS2.
 
 
+###Blast-based
 
+* run_BLAST
+
+Runs BLAST given a FASTA query file an directory of blast databases.	
+
+* combine_ITS_blasts.pl
+
+Combines BLAST output
