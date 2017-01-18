@@ -4,22 +4,22 @@
 1-17-17
 Bradford Condon <bradford.condon@gmail.com>
 
-This repo is an early draft.
-
 The collection will include all scripts required to 
 
 * Automate working with ITS sequences
 * Align orthologs
 * Calculate population genomics statistics (ie. FST)
 
-
 ###Requirements and set up
 
-[ITSx]: http://microbiology.se/software/itsx/
+* [ITSx](http://microbiology.se/software/itsx/)
+* BioPerl (for BLAST-based ITS)
 
-BioPerl (for BLAST-based ITS)
 
-#Scripts
+
+#ITS
+
+ITS regions are important barcodes for fungi.  This repo contains two sets of scripts for extracting them: ITSx and BLAST.  The main problem with an ITS approach is the sequences are often left out of assemblies for next-generation sequenced genomes.  Because of this, tools that extract ITS regions are less helpful than an approach which amplifies and sequences ITS regions from the beginning. 
 
 
 ###ITSx based
@@ -52,3 +52,7 @@ After generating the ITS sequences, they can be aligned and trimmed as follows:
 muscle3 -in data/ITS1_all_Loci_100min.fasta -out data/ITS1_100min_aligned.fasta
 Gblocks data/ITS1_100min_aligned.fasta -t=d -b5=n
 ```
+
+#Population genomics
+
+
