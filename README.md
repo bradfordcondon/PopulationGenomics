@@ -14,6 +14,13 @@ The collection will include all scripts required to
 
 #Scripts
 
-* run_ITS.pl
+* **run_ITS.pl**
 
 Runs ITSx on all FASTA files in the current directory, or, specificy a directory with -w.
+
+* **process_ITSX.pl**
+
+Processes ITSx output.  Peforms filtering (regions > 75, < 400), outputs two FASTA files- one for ITS1, one for ITS2.
+
+
+
