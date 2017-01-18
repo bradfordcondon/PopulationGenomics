@@ -55,4 +55,20 @@ Gblocks data/ITS1_100min_aligned.fasta -t=d -b5=n
 
 #Population genomics
 
+Given a set of aligned orthologs (each gene in a seperate file)
 
+
+* cleanNames_orthologs.sh
+
+Simple shell script that renames FASTA headers.  Necessary for how input was named.
+```
+GRF52 MGG_17959T0_GRF52_scaffold00200.g7712.t1 GRF52_scaffold00200.g7712.t1 
+```
+Contains gene model & scaffold location.  
+
+###BLAST
+
+In addition to starting with a set of orthologs, I wanted to generate my own set for a specific gene.  With that in mind, I use the two beow scripts to BLAST a query gene against all genomes, and then concatenate the results.
+
+* run_BLAST_for_orthologs.pl
+* Read_and_stitch_orthologs.pl
