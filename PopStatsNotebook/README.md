@@ -1,56 +1,21 @@
 README
 =======
-Bradford Condon
-Started 9-28-16
-Last updated 1-16-17
-Adapted from PopGenomeProject7-29-16
+Bradford Condon <bradford.condon@gmail.com>
 
 #Overview
+
+**Aim**
+To calculate population genome stats (FST, nei's pi) on data. Populations are defined in two ways- the first by PGT/POT split, the second by the Festuca-Lolium/Festuca-Lolium-Triticum-Bromus split (FL/FLTB) we define.
+
 **data**
 * FASTA: FASTA alignment of conserved orthologs from all strains.  Recieved from Elisabeth Fournier
 *  gList: master list of all strains included and their associated clade grouping (unfinished, waiting on confirmation)
 * magnaporthe_phylogenomics_genomes2.xls: Human parseable data of gList and additional info.
 
-**Current status:**
-Figures generated for paper
-Additional analyses not included in publication at this point, not finished past FST histograms.
-
-**1-16-17 update**:
-Strain classification cross-checked against most recent mapping.
-
-
-#Results:
-##Summary of loci (performed by collaborators)
-
-Dataset 81 genomes
-Number of single copy orthologs	2241
-Number of single-copy orthologs with at least 1 informative site 2241
-
-Dataset: 76 M. oryzae genomes
-Number of single copy orthologs	2865
-Number of single-copy orthologs with at least 1 informative site 2682
-
 ##Pretrimming data:
-Unfortunately the FASTA headers have weird characters etc, and need to be parsed first.
-Headers are as follows:
+Prior to analysis, sequence alignments are trimmed so FASTA headers are simplified to strain name only.  The simple script CleanName_Orthologs.sh accomplishes this.
 
-GRF52 MGG_17959T0_GRF52_scaffold00200.g7712.t1 GRF52_scaffold00200.g7712.t1
-this is matched bythe regexp:
-
-'\s.'
-Although to get the newlines right, this is the right REGEXP:
- 's/\s.*\n/\n/g'
-and I wrote a simple script, cleanalignmentnames, in the bin folder.
-
-Important consideration:  THere are three things.
-
-* Host isolated from
-* Host clade we assign to based on whole-genome distance
-* PGT split 
-
-#PGT split
-
-Its possible that I really want to run Fstats seperately for our host clades, and then again for the PGT clades.
+##PGT/POT
 
 PGT strains are based on the MPG1 locus (see: Castroagudin, V. L., Moreira, S. I., Pereira, D. A. S., Moreira, S. S.,  P.C. Brunner, Maciel, J. L. N., et al. (2016). Pyricularia graminis-tritici sp. nov., a new Pyricularia species causing wheat blast.)
 
@@ -58,246 +23,20 @@ PGT strains are based on the MPG1 locus (see: Castroagudin, V. L., Moreira, S. I
 Protein ID:	114604
 Location:	Supercontig_6.19:153468-154318
 
-Unfortunately MGG_10315T0 is not in the filtered ortholog set. 10313, 10316 are.  
-
-So instead, need to blast with this against all genomes, using the below command.
-
-
-```r
-perl bin/script3_Execute_BLAST.pl -i supporting/mpg1seed.fasta -w '/Users/chet/uky/popGenomeProject7-29-16/wholeGenome/'
-perl bin/All_regions_from_blast_alt_9-15-16
-
-#Then, align and trim
-muscle3 -in MPG_all.fasta -out MPG_all_aligned.fasta
-gblocks MPG_all_aligned.fasta -t=d -b5=n
-```
-
-Confusing results.  I'm left with 169/208 positions.  But most of those 169 positions are 100% identical across all strains.
-Ah, of course, all of the differences in MPG1 are in the first 40 base pairs, which are what I'm excluding.
-
-Using the ortholog alignment would be better, but for now, can discern MPG1 phenotype.
-
-
-Below strains are *PGT* based on mPG1 locus.
-*PGT*: 
-
-B51
-B71
-BdBar
-BdJes
-BdMeh
-CD156
-CHRF
-CHW
-EI9411
-EI9604
-FH
-G22
-GG11
-HO
-LpKY97
-P28
-PGPA
-PH42
-PL2-1
-PL3-1
-PY0925
-PY86-1
-Pg1213-22
-PgKY
-WBKY11
-Z2-1
-Br62
-
-
 #FST statistics
 
-![FST, From Vitti 2013](supporting/FSTfig.png)
 
-*assignments made without strong confdience:*
-BR0032 -> TB
-Br48 -> TB
-PgPA18C-02 -> FLTB
 
 
 
 ```r
 library("PopGenome")
-```
-
-```
-## Loading required package: ff
-```
-
-```
-## Loading required package: bit
-```
-
-```
-## Attaching package bit
-```
-
-```
-## package:bit (c) 2008-2012 Jens Oehlschlaegel (GPL-2)
-```
-
-```
-## creators: bit bitwhich
-```
-
-```
-## coercion: as.logical as.integer as.bit as.bitwhich which
-```
-
-```
-## operator: ! & | xor != ==
-```
-
-```
-## querying: print length any all min max range sum summary
-```
-
-```
-## bit access: length<- [ [<- [[ [[<-
-```
-
-```
-## for more help type ?bit
-```
-
-```
-## 
-## Attaching package: 'bit'
-```
-
-```
-## The following object is masked from 'package:base':
-## 
-##     xor
-```
-
-```
-## Attaching package ff
-```
-
-```
-## - getOption("fftempdir")=="/var/folders/p2/25r02fld33qdr02n_gp25_pm0000gn/T//RtmptRsug2"
-```
-
-```
-## - getOption("ffextension")=="ff"
-```
-
-```
-## - getOption("ffdrop")==TRUE
-```
-
-```
-## - getOption("fffinonexit")==TRUE
-```
-
-```
-## - getOption("ffpagesize")==65536
-```
-
-```
-## - getOption("ffcaching")=="mmnoflush"  -- consider "ffeachflush" if your system stalls on large writes
-```
-
-```
-## - getOption("ffbatchbytes")==16777216 -- consider a different value for tuning your system
-```
-
-```
-## - getOption("ffmaxbytes")==536870912 -- consider a different value for tuning your system
-```
-
-```
-## 
-## Attaching package: 'ff'
-```
-
-```
-## The following objects are masked from 'package:bit':
-## 
-##     clone, clone.default, clone.list
-```
-
-```
-## The following objects are masked from 'package:utils':
-## 
-##     write.csv, write.csv2
-```
-
-```
-## The following objects are masked from 'package:base':
-## 
-##     is.factor, is.ordered
-```
-
-```r
 library("ggplot2")
 library("reshape")
 library("knitr")
-```
-
-```
-## Warning: package 'knitr' was built under R version 3.2.5
-```
-
-```r
  library(plyr)
-```
-
-```
-## Warning: package 'plyr' was built under R version 3.2.5
-```
-
-```
-## 
-## Attaching package: 'plyr'
-```
-
-```
-## The following objects are masked from 'package:reshape':
-## 
-##     rename, round_any
-```
-
-```r
-setwd("/Users/chet/uky/popGenomeOrthologs9-28-16")
 #read in aux functions
 source("/Users/chet/uky/AllRFunctions/AuxFunctions.R")
-```
-
-```
-## Warning: package 'ape' was built under R version 3.2.5
-```
-
-```
-## Warning: package 'phytools' was built under R version 3.2.5
-```
-
-```
-## Loading required package: maps
-```
-
-```
-## Warning: package 'maps' was built under R version 3.2.5
-```
-
-```
-## 
-## Attaching package: 'maps'
-```
-
-```
-## The following object is masked from 'package:plyr':
-## 
-##     ozone
-```
-
-```r
 GENOME.class <- readData("alignments/", FAST=FALSE) #Read alignments
 ```
 
@@ -578,12 +317,6 @@ P.oo       1.83
 P.ot       2.68
 P.other    4.75
 
-gsub("pop1", "P.gt", fstbypomelt$comparison)#rename populations to full pop assignments
-fstbypomelt$comparison<- gsub("pop2", "P.oo", fstbypomelt$comparison)
-fstbypomelt$comparison<- gsub("pop3", "P.ot", fstbypomelt$comparison)
-fstbypomelt$comparison<- gsub("pop4", "P.other", fstbypomelt$comparison)
-
-
 
 
 #Whole-genome class
@@ -771,346 +504,17 @@ TB          2.46
 
 
 
-#older
-
-Below code parses clade list into PGT/PO based on MPG1 list.
-Above code I made seperate values on the table.
+>In principle Fst scores are not impossible, as they mean that there is more variation within the population than between the two populations compared. In general, I believe it is common practice to change all the negative Fst scores to 0 and basically consider them as loci for which there is no population differentiation.
 
 
-```r
-library("PopGenome")
-library("ggplot2")
-library("reshape")
-library("knitr")
- library(plyr)
-setwd("/Users/chet/uky/popGenomeOrthologs9-28-16")
-GENOME.class <- readData("alignments/", FAST=FALSE)
-
-head(GENOME.class@n.sites) #Confirm that sites are loaded in and have names
-head(get.sum.data(GENOME.class))
-
-##clade list
-#note:
-#Set WBKY, PY86-1.fasta , PY5010 as Loliums instead of triticum
-clade_list <- read.table(file = "clade_list.txt", header=TRUE)
-kable(clade_list)
-wheats = as.character(clade_list[clade_list$HostGenus == 'Triticum',3])
-Oryza = as.character(clade_list[clade_list$HostGenus == 'Oryza',3])
-Eleusine = as.character(clade_list[clade_list$HostGenus == 'Eleusine',3])
-Setaria = as.character(clade_list[clade_list$HostGenus == 'Setaria', 3])
-Lolium = as.character(clade_list[clade_list$HostGenus == 'Lolium', 3])
-Brom = as.character(clade_list[clade_list$HostGenus == 'Bromus', 3])
-Sten = as.character(clade_list[clade_list$HostGenus == 'Stenotaphrum', 3])
-#reconcile headers of alignments, and the names
-###MPG1 vs not MPG1
-mpg1List<- read.table(file = "supporting/pgt_list.txt", header= FALSE, stringsAsFactors = FALSE)
-###
-#how many of the wheats, loliums, are in MPG1?
- length(wheats[wheats%in% mpg1List[[1]]])
- length(Lolium[Lolium%in% mpg1List[[1]]])
- length(Eleusine[Eleusine%in% mpg1List[[1]]])
-
-#nonMPG1 are going to be wheat/Lolium that are not in MPG1
-wheatNonMPG1<- wheats[!wheats%in% mpg1List[,1]]
-LoliumNonMPG1 <- Lolium[!Lolium%in% mpg1List[,1]]
-notMPG1all <- c(wheatNonMPG1, LoliumNonMPG1)
- wheats[!wheats%in% mpg1List[,1]]
-
- Lolium[!Lolium%in% mpg1List[,1]]
-
-notMPG1all
-```
-
-
-#FStats 10-7-16
-Guiding principle.
-
-I am performing two sets of FST comparisons.
-
-The first uses the whole-genome classifications.
-
-The second uses the MPG1 classification.
-
-This analysis focuses on *MPG1 vs MGO only.*  This means ignoring, for example, Digitaria...
-
-
-```r
-##
-#part I: MPG1-based classifcation
-##
-MPG1.PGT <- mpg1List[[1]] #Strains classified as MGP1 
-#everything else
- cladesNONMPG1 <- clade_list[!clade_list$longformName %in% MPG1.PGT,]
-
- #we want to compare the MPG1 to the remaining wheats/FL, and Oryza
-PO.Oryza = as.character(cladesNONMPG1[cladesNONMPG1$HostGenus == 'Oryza',3])
-PO.wheats = as.character(cladesNONMPG1[cladesNONMPG1$HostGenus %in% c('Triticum', 'Eleusine', 'Lolium'),3])
-PGThypothesis <- set.populations(GENOME.class, list(MPG1.PGT, PO.Oryza, PO.wheats))  ##assign populations
-PGThypothesis <- diversity.stats(PGThypothesis)
-PGThypothesis <- F_ST.stats(PGThypothesis)
-FSTpairwise<-get.F_ST(PGThypothesis ,mode=FALSE,pairwise=TRUE)
-hapPairFST<- (FSTpairwise[[2]]) ##Choose haplotype pairwise FST (as opposed ot nucleotide)
-fstbypomelt <- melt(hapPairFST)
-colnames(fstbypomelt) <- c("locus", "comparison", "value")
-fstbypomelt$comparison<- gsub("pop1", "PGT", fstbypomelt$comparison)#rename populations to full pop assignments
-fstbypomelt$comparison<- gsub("pop2", "PO.Triticum", fstbypomelt$comparison)
-fstbypomelt$comparison<- gsub("pop3", "PO.Oryza", fstbypomelt$comparison)
-
-sum(is.na(fstbypomelt$value))
-
-noNAfstmelt<- fstbypomelt[!is.na(fstbypomelt$value),]#NAs ruin mean, remove
-
-#replace negatives with zero
-noNAfstmelt$value[which(noNAfstmelt$value < 0)] <- 0
-
-p <- ggplot(noNAfstmelt, aes(comparison, value))
-p+ geom_boxplot()
-
-  kable(aggregate(x= noNAfstmelt$value, by=list(noNAfstmelt$comparison), mean))
-kable(aggregate(x= noNAfstmelt$value, by=list(noNAfstmelt$comparison), sd))
-```
-
-##Fstats of MGP1 vs other
-
-
-```r
-GENOME.class <- set.populations(GENOME.class, list(mpg1List[,1], notMPG1all))  ##assign populations
-GENOME.class@populations
-GENOME.class <- diversity.stats(GENOME.class)
-GENOME.class <- F_ST.stats(GENOME.class)
-FST_by_locus<- get.F_ST(GENOME.class)
-
-FSTbypop<-GENOME.class@hap.diversity.within
- hist(FST_by_locus[,2], main = "FST for PGT vs PO Triticum, Festuca, Loliums", xlab = "FST", ylab =  "number of loci")
-
-#how many are 0 or below?
-  sum(FST_by_locus[,2] <= 0)
-  sum(FST_by_locus[,2] <= .01)
-  sum(FST_by_locus[,2] > .1)
-  sum(FST_by_locus[,2] < .1)
-    sum(FST_by_locus[,2] > .2)
-
- 
-    mean(FST_by_locus[,2])
-```
-
+#Neutrality statistics
 
 
 
 ```r
-MOwheatsFL <- notMPG1all
-GENOME.class <- set.populations(GENOME.class, list(mpg1List[,1], MOwheatsFL, Oryza, Eleusine, Setaria, Brom, Sten ))  ##assign populations
-GENOME.class <- diversity.stats(GENOME.class)
-GENOME.class <- F_ST.stats(GENOME.class)
-FST_by_locus<- get.F_ST(GENOME.class)
-
-hapbyPop<-GENOME.class@hap.diversity.within
-
-hist(FST_by_locus[,2], main = "Haplotype FST for all loci, all populations", xlab = "FST", ylab =  "number of loci")
-
-
-hist(FST_by_locus[,3], main = "Nucleotide FST for all loci, all populations", xlab = "FST", ylab =  "number of loci")
-##
-#pairwise FSTs
-##
-FSTpairwise<-get.F_ST(GENOME.class ,mode=FALSE,pairwise=TRUE)
-
-#1 is nuc, 2 is haplotype, 3 is nei G
-
-hapPairFST<- (FSTpairwise[[2]])
-
-nucPairFST<- (FSTpairwise[[1]])
-
-#convert negatives to zero?
-
-#In principle Fst scores are not impossible, as they mean that there is more variation within the population than between the two populations compared. In general, I believe it is common practice to change all the negative Fst scores to 0 and basically consider them as loci for which there is no population differentiation.
-
-#for now lets convert negatives to zero
-
-#replace pop names
-
-#fstbypomelt <- melt(hapPairFST)
-fstbypomelt <- melt(nucPairFST)
-
-colnames(fstbypomelt) <- c("locus", "comparison", "value")
-
-fstbypomelt$comparison<- gsub("pop1", "PGT", fstbypomelt$comparison)
-fstbypomelt$comparison<- gsub("pop2", "PO_wheat_FL", fstbypomelt$comparison)
-fstbypomelt$comparison<- gsub("pop3", "Oryza", fstbypomelt$comparison)
-fstbypomelt$comparison<- gsub("pop4", "Eleusine", fstbypomelt$comparison)
-fstbypomelt$comparison<- gsub("pop5", "Setaria", fstbypomelt$comparison)
-fstbypomelt$comparison<- gsub("pop6", "Bromus", fstbypomelt$comparison)
-fstbypomelt$comparison<- gsub("pop7", "Stenatotaphrum", fstbypomelt$comparison)
-
-
-
-sum(is.na(fstbypomelt$value))
-
-noNAfstmelt<- fstbypomelt[!is.na(fstbypomelt$value),]#NAs ruin mean, remove
-
-#replace negatives with zero
-noNAfstmelt$value[which(noNAfstmelt$value < 0)] <- 0
-
-p <- ggplot(noNAfstmelt, aes(comparison, value))
-p+ geom_boxplot()
-
-  kable(aggregate(x= noNAfstmelt$value, by=list(noNAfstmelt$comparison), mean))
-kable(aggregate(x= noNAfstmelt$value, by=list(noNAfstmelt$comparison), sd))
+#neutrality.stats(PGThypothesis)
+#get.neutrality(PGThypothesis)[[1]]
+#neutrality.stats(WGhypothesis)
+#get.neutrality(WGhypothesis)[[1]]
 ```
-
-##Fstats of all populations
-
-
-```r
-GENOME.class <- set.populations(GENOME.class, list(wheats, Oryza, Eleusine, Setaria, Lolium, Brom, Sten))  ##assign populations
-GENOME.class@populations
-GENOME.class <- diversity.stats(GENOME.class)
-GENOME.class <- F_ST.stats(GENOME.class)
-FST_by_locus<- get.F_ST(GENOME.class)
-
-FSTbypop<-GENOME.class@hap.diversity.within
-hist(FST_by_locus[,2], main = "FST for all loci, all populations", xlab = "FST", ylab =  "number of loci")
-
-
-#how many are 0 or below?
-  sum(FST_by_locus[,2] <= 0)
-  sum(FST_by_locus[,2] <= .01)
-  sum(FST_by_locus[,2] > .1)
-  sum(FST_by_locus[,2] < .1)
-    sum(FST_by_locus[,2] > .2)
-
-    sum(FST_by_locus[,2] > 0.8)
-
-    
-#multiplot(a, b) 
-#multiplot only works for GGPLOT objects.  Would need to replot as GGPLOT2
-```
-
-The majority of loci have an FST of 1.
-
->A value of one implies that all genetic variation is explained by the population structure, and that the two populations do not share any genetic diversity. - wikipedia
-
-
-```r
-GENOME.class <- set.populations(GENOME.class, list(wheats, Lolium))  ##assign populations
-GENOME.class <- diversity.stats(GENOME.class)
-GENOME.class <- F_ST.stats(GENOME.class)
-FST_by_locus<- get.F_ST(GENOME.class)
-hist(FST_by_locus[,2], main = "nucleotide FST for all loci, just wheat/lolium", xlab = "FST", ylab =  "number of loci")
-
-divStats <- get.diversity(GENOME.class)
-```
-
-
-===
-===
-
-below this line are analysis that I may include again, but are not necessary right now.
-
-
-```r
-FSTbypop<-GENOME.class@hap.diversity.within
-
-fstbypomelt <- melt(FSTbypop)
-colnames(fstbypomelt) <- c("locus", "population", "FST")
-#replace pop1 etc with pop names
-#order fed was:
-#wheats, Oryza, Eleusine, Setaria, Lolium, Brom, Sten
- library(plyr)
-fstbypomelt$population <- mapvalues(levels(fstbypomelt$population), from = levels(fstbypomelt$population), to = c("Triticum", "Oryza", "Eleusine", "Setaria", "Lolium", "Bromus", "Sten"))
-
-
-aggregate(fstbypomelt[,3], list(fstbypomelt$population), mean)
-
-hist(GENOME.class@n.biallelic.sites)
-
-hist(GENOME.class@n.polyallelic.sites)
- 
-ggplot( aes(justWheat) ) +geom_histogram(bins = 50)+
-  ylab("Number of loci") +
-  ggtitle("within population haplotype diversity by locus")
-
-
-pairwiseNucDiv <-GENOME.class@nuc.diversity.between
-fstbypomelt <- melt(pairwiseNucDiv)
-colnames(fstbypomelt) <- c("comparison", "locus", "value")
-#replace pop1 etc with pop names
-#order fed was:
-#wheats, Oryza, Eleusine, Setaria, Lolium, Brom, Sten
-
-
-fstbypomelt$comparison<- gsub("pop1", "Triticum", fstbypomelt$comparison)
-fstbypomelt$comparison<- gsub("pop2", "Oryza", fstbypomelt$comparison)
-fstbypomelt$comparison<- gsub("pop3", "Eleusine", fstbypomelt$comparison)
-fstbypomelt$comparison<- gsub("pop4", "Setaria", fstbypomelt$comparison)
-fstbypomelt$comparison<- gsub("pop5", "Lolium", fstbypomelt$comparison)
-fstbypomelt$comparison<- gsub("pop6", "Bromus", fstbypomelt$comparison)
-fstbypomelt$comparison<- gsub("pop7", "Stenatotaphrum", fstbypomelt$comparison)
-
-
-
-aggregate(fstbypomelt[,3], list(fstbypomelt$comparison), mean)
-```
-
-Remember that an FST of 0 implies complete sharing, and 1 is completely different.  
-
-It's interesting that for most populations, at least 50% of all loci are completely identical.
-
-
-
-```r
- summary <- get.sum.data(GENOME.class)
-head(summary)
-#n.valid.sites is the number of sites without gaps.  Why would it be NaN? Maybe because i chose fast to ignore the coding frame info?
-```
-
-
-#neutrality statistics
-
-
-```r
- GENOME.class <- neutrality.stats(GENOME.class)
-popOneNeutrality<- get.neutrality(GENOME.class)[[1]]
-popTwoNeutrality<- get.neutrality(GENOME.class)[[1]]
-head(popOneNeutrality)
-  head(GENOME.class@region.stats@nucleotide.diversity)
-```
-
-NAs here can be due to:
-
-* the statistic needs an outgroup
-* the statistic was not switched on
-* there are no SNPs in the entire region
-
-
-#Dxy: absolute divergence
-
-Nei's Pi is roughly equivalent to dxy (which, is, in turn, roughly equivalent to absolute nucleotide diversity)
-
-
-```r
-GENOME.class <- diversity.stats(GENOME.class, pi =TRUE)
-diversities <- get.diversity(GENOME.class)
-
-hist(GENOME.class@Nei.G_ST, main = "wheat & F-L, Nei GST")
-hist(GENOME.class@nuc.diversity.within, main = "Absolute nucleotide diversity within (Hudson 1992)")
-
-#hap.diversity.between 
-hist(GENOME.class@nuc.diversity.between, main = "Pairwise nucleotide diversity between (Hudson 1992), wheat and F-L")
-
-
-hist(GENOME.class@Pi, main = "Nei's Pi") 
-```
-
-
-
-##
-
-1.	Ellison, C. E. et al. Population genomics and local adaptation in wild isolates of a model microbial eukaryote. Proc. Natl. Acad. Sci. U.S.A. 108, 2831–2836 (2011).
-
-They report:
-interpopulation FST value
-
-For each population, Theta pi, LD decay, D.S. %
-
 
