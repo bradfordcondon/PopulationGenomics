@@ -2,6 +2,8 @@ README
 =======
 Bradford Condon <bradford.condon@gmail.com>
 
+Note- knitr tables are broken (formatted for html, not md).  Recompiling.
+
 #Overview
 
 **Aim**
